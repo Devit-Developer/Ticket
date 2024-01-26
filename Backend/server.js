@@ -29,5 +29,8 @@ app.use('/api', authRoutes);
 const companyRoutes = require('./src/routes/companyRoutes');
 app.use('/api', companyRoutes);
 
+const companyTicketRoutes = require('./src/routes/companyTicketRoutes');
+app.use('/api', companyTicketRoutes);
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

@@ -48,7 +48,7 @@ const CTADatatable = ({ data }) => {
 
   return (
       <div className="table-responsive-sm">
-          <table ref={tableRef} className="table table-striped table-bordered" width={'100%'}></table>
+          <table ref={tableRef} className="table table-striped table-bordered table-responsive" width={'100%'}></table>
       </div>
   );
 };
