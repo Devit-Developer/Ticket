@@ -1,56 +1,50 @@
-const Company = require("../modules/Company");
-const timezone = require('timezone');
+const CompayTicket = require("../modules/CompayTicket");
 
-
-exports.addCompany = async (req, res) => {
-
-    const companyId = req.params.id;
-    const { name, address, email, mobile } = req.body;
+exports.addCompayTicket = async (req, res) => {
 
     try {
+        const companyTicketId = req.params.id;
+        const { company, startNumber, endNumber, coin } = req.body;
 
-        let company;
+        if (companyTicketId) {
 
-        if (companyId) {
-            // Update existing company
-            company = await Company.findByIdAndUpdate(companyId, { name, address, email, mobile }, { new: true });
+            await CompayTicket.findByIdAndUpdate(companyTicketId, { company, startNumber, endNumber, coin }, { new: true });
+
         } else {
-            // Create new company
-            company = await Company.create({ name, address, email, mobile });
+
+            await CompayTicket.create({ company, startNumber, endNumber, coin });
         }
 
         res.status(200).json({ message: 'Company Created successfully' });
+
     } catch (error) {
 
         if (error.name === 'ValidationError') {
-            const errorMessage = Object.values(error.errors).map((err) => err.message);
 
+            const errorMessage = Object.values(error.errors).map((err) => err.message);
             res.status(400).json({ error: errorMessage });
-        }
-        else if (error.code === 11000 && error.keyPattern && error.keyPattern.name) {
-            // Duplicate username error
-            res.status(400).json({ error: ['Company name is already taken'] });
+
         } else {
-            // Other errors
+
             res.status(500).json({ error: 'Internal Server Error.' });
         }
     }
 };
 
-exports.getCompany = async (req, res) => {
+exports.getCompanyTicket = async (req, res) => {
     try {
-        const records = await Company.find();
+        const records = await CompayTicket.find();
         res.status(200).json(records);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 };
 
-exports.editCompany = async (req, res) => {
+exports.editCompanyTicket= async (req, res) => {
     const recordId = req.params.id;
     try {
         // Use mongoose to find and remove the record by ID
-        const result = await Company.findById(recordId);
+        const result = await CompayTicket.findById(recordId);
 
         if (!result) {
             return res.status(404).json({ error: 'Record not found' });
@@ -62,11 +56,11 @@ exports.editCompany = async (req, res) => {
     }
 };
 
-exports.deleteCompany = async (req, res) => {
+exports.deleteCompanyTicket = async (req, res) => {
     const recordId = req.params.id;
     try {
         // Use mongoose to find and remove the record by ID
-        const result = await Company.findByIdAndDelete(recordId);
+        const result = await CompayTicket.findByIdAndDelete(recordId);
 
         if (!result) {
             return res.status(404).json({ error: 'Record not found' });
