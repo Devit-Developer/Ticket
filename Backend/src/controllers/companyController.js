@@ -5,7 +5,7 @@ const timezone = require('timezone');
 exports.addCompany = async (req, res) => {
 
     const companyId = req.params.id;
-    const { name, address, email, mobile } = req.body;
+    const { name, code, address, email, mobile } = req.body;
 
     try {
 
@@ -13,10 +13,10 @@ exports.addCompany = async (req, res) => {
 
         if (companyId) {
             // Update existing company
-            company = await Company.findByIdAndUpdate(companyId, { name, address, email, mobile }, { new: true });
+            company = await Company.findByIdAndUpdate(companyId, { name, code, address, email, mobile }, { new: true });
         } else {
             // Create new company
-            company = await Company.create({ name, address, email, mobile });
+            company = await Company.create({ name, code, address, email, mobile });
         }
 
         res.status(200).json({ message: 'Company Created successfully' });
@@ -28,8 +28,13 @@ exports.addCompany = async (req, res) => {
             res.status(400).json({ error: errorMessage });
         }
         else if (error.code === 11000 && error.keyPattern && error.keyPattern.name) {
-            // Duplicate username error
+
             res.status(400).json({ error: ['Company name is already taken'] });
+
+        } else if (error.code === 11000 && error.keyPattern && error.keyPattern.code) {
+
+            res.status(400).json({ error: ['Company Code is already taken'] });
+
         } else {
             // Other errors
             res.status(500).json({ error: 'Internal Server Error.' });
