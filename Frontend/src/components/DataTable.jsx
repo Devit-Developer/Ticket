@@ -17,6 +17,7 @@ const DataTable = ({ data }) => {
                 columns: [
                     { title: 'ID', data: '_id' },
                     { title: 'Name', data: 'name' },
+                    { title: 'Comp_Code', data: 'code' },
                     { title: 'Address', data: 'address' },
                     { title: 'Email', data: 'email' },
                     { title: 'Mobile', data: 'mobile' },

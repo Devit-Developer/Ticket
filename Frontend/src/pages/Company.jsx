@@ -6,7 +6,7 @@ import DataTable from '../components/DataTable';
 
 const Company = () => {
 
-    const [credentials, setcredentials] = useState({ id: "", name: "", address: "", email: "", mobile: "" })
+    const [credentials, setcredentials] = useState({ id: "", name: "", code: "", address: "", email: "", mobile: "" })
     const [error, setError] = useState('');
     const [singleError, setSingleError] = useState();
     const [successMessage, setSuccessMessage] = useState('');
@@ -26,6 +26,7 @@ const Company = () => {
         setcredentials({
             id: '',
             name: '',
+            code: '',
             address: '',
             email: '',
             mobile: ''
@@ -63,7 +64,7 @@ const Company = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ name: credentials.name, address: credentials.address, email: credentials.email, mobile: credentials.mobile}),
+                body: JSON.stringify({ name: credentials.name, code: credentials.code, address: credentials.address, email: credentials.email, mobile: credentials.mobile }),
             });
 
             if (!response.ok) {
@@ -91,11 +92,10 @@ const Company = () => {
 
     // Delete company
     window.handleDelete = async (id) => {
-        if (confirm('Are you sure wan`t to delete this record..?')) {
-
+        
             try {
                 // Send a DELETE request to the server to delete the record by ID
-                const response = await fetch(`${apiURL}/delete-company/${id}`, {
+                const response = await fetch(`${apiURL}delete-company/${id}`, {
                     method: 'DELETE',
                 });
 
@@ -109,7 +109,6 @@ const Company = () => {
             } catch (error) {
                 console.error('Error deleting record:', error.message);
             }
-        }
 
     };
 
@@ -131,6 +130,7 @@ const Company = () => {
             setcredentials({
                 id: data.result._id,
                 name: data.result.name,
+                code: data.result.code,
                 address: data.result.address,
                 email: data.result.email,
                 mobile: data.result.mobile
@@ -179,13 +179,17 @@ const Company = () => {
                 <form onSubmit={handleSubmit} method='POST'>
                     <input type="hidden" name="id" value={credentials.id} onChange={handleChange} />
                     <div className="row">
-                        <div className="col-md-12">
+                        <div className="col-md-8">
                             <label htmlFor="Name" className="form-label mt-3">Company Name</label>
                             <input type="text" className="form-control" name="name" id="Name" autoComplete="off" placeholder="Enter Company Name" value={credentials.name} onChange={handleChange} />
                         </div>
+                        <div className="col-md-4">
+                            <label htmlFor="Code" className="form-label mt-3">Company Code</label>
+                            <input type="text" className="form-control" name="code" id="Code" autoComplete="off" placeholder="Enter Company Code" value={credentials.code} onChange={handleChange} />
+                        </div>
                         <div className="col-md-12">
                             <label htmlFor="address" className="form-label mt-3">Address</label>
-                            <textarea name="address" id="address" className="form-control" rows={2} value={credentials.address} onChange={handleChange} ></textarea>
+                            <textarea name="address" id="address" className="form-control" rows={2} value={credentials.address} onChange={handleChange} placeholder="Address"></textarea>
                         </div>
                         <div className="col-md-6">
                             <label htmlFor="mobile" className="form-label mt-3">Mobile</label>

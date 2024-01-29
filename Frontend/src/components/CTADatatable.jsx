@@ -16,7 +16,7 @@ const CTADatatable = ({ data }) => {
               data: data,
               columns: [
                   { title: 'ID', data: '_id' },
-                  { title: 'Company', data: 'company' },
+                  { title: 'Company', data: 'code' },
                   { title: 'Start Number', data: 'startNumber' },
                   { title: 'End Number', data: 'endNumber' },
                   { title: 'Coin', data: 'coin' },
