@@ -38,7 +38,6 @@ const CompanyTicketAssign = () => {
         try {
 
             const response = await fetch(`${apiURL}get-company-ticket`);
-            const response2 = await fetch(`${apiURL}/get-company`);
 
             if (!response.ok && !response2.ok) {
                 setSingleError('Failed to fetch records');
@@ -46,6 +45,9 @@ const CompanyTicketAssign = () => {
             }
 
             const data = await response.json();
+            
+            const response2 = await fetch(`${apiURL}get-company`);
+
             const data2 = await response2.json();
 
             const updatedData = data.map(item1 => {
@@ -53,7 +55,7 @@ const CompanyTicketAssign = () => {
 
                 if (matchingItem2) {
                     // Merge properties from item2 into item1
-                    return { ...item1, company: matchingItem2.name};
+                    return { ...item1, code: matchingItem2.code};
                 }
                 return item1;
             });
@@ -143,7 +145,7 @@ const CompanyTicketAssign = () => {
     };
 
     window.handleDelete = async (id) => {
-        if (confirm('Are you sure wan`t to delete this record..?')) {
+        // if (confirm('Are you sure wan`t to delete this record..?')) {
 
             try {
                 // Send a DELETE request to the server to delete the record by ID
@@ -160,7 +162,7 @@ const CompanyTicketAssign = () => {
             } catch (error) {
                 console.error('Error deleting record:', error.message);
             }
-        }
+        // }
     }
 
     const handleOpenModal = (e) => {
