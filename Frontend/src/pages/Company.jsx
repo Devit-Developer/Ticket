@@ -14,6 +14,9 @@ const Company = () => {
 
     const apiURL = import.meta.env.VITE_REACT_API_URL;
 
+    const token = sessionStorage.getItem('token');
+    console.log(token);
+
     useEffect(() => {
         fetchRecords();
     }, []);
@@ -36,7 +39,13 @@ const Company = () => {
     //get-company
     const fetchRecords = async () => {
         try {
-            const response = await fetch(`${apiURL}/get-company`);
+            const response = await fetch(`${apiURL}get-company`,{
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                }
+            });
             if (!response.ok) {
                 setSingleError('Failed to fetch records');
             }
@@ -59,7 +68,7 @@ const Company = () => {
         setSuccessMessage('');
 
         try {
-            const response = await fetch(`${apiURL}/add-company/${credentials.id}`, {
+            const response = await fetch(`${apiURL}add-company/${credentials.id}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

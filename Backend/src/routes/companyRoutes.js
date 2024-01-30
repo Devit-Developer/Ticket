@@ -4,7 +4,7 @@ const { addCompany, getCompany, deleteCompany, editCompany } = require('../contr
 const { authenticateToken } = require('../middleware/authMiddleware');
 
 router.post('/add-company/:id?', addCompany);
-router.get('/get-company', getCompany);
+router.get('/get-company', authenticateToken, getCompany);
 router.delete('/delete-company/:id', deleteCompany);
 router.get('/edit-company/:id', editCompany);
 

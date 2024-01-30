@@ -9,6 +9,7 @@ exports.register = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = new User({ username, password: hashedPassword, roles });
     await newUser.save();
+    
     res.status(200).json({ message: 'User registered successfully' });
   } catch (error) {
     console.log(error);
@@ -27,22 +28,25 @@ exports.login = async (req, res) => {
     const { username, password } = req.body;
 
     // Find the user by username
-    const user = await User.findOne({ username });
+    const userSave = await User.findOne({ username });
 
     // Check if the user exists
-    if (!user) {
+    if (!userSave) {
       return res.status(400).json({ error: 'Invalid username or password' });
     }
 
     // Check if the provided password matches the stored hashed password
-    const passwordMatch = await bcrypt.compare(password, user.password);
+    const passwordMatch = await bcrypt.compare(password, userSave.password);
 
     if (!passwordMatch) {
       return res.status(400).json({ error: 'Invalid username or password' });
     }
-
+    const user = {
+      userId: userSave._id,
+      username: userSave.username,
+    };
     // Generate a JWT token
-    const token = jwt.sign({ username: user.username }, JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign(user, JWT_SECRET, { expiresIn: '1h' });
 
     res.json({ token });
   } catch (error) {
