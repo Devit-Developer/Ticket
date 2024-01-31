@@ -15,11 +15,19 @@ const CompanyTicketAssign = () => {
     const [companyRecords, setCompanyRecords] = useState([]);
     const [companyTicketRecords, setcompanyTicketRecords] = useState([]);
     const apiURL = import.meta.env.VITE_REACT_API_URL;
+    const token = sessionStorage.getItem('token');
+
 
     const fetchRecords = async () => {
         try {
 
-            const response = await fetch(`${apiURL}/get-company`);
+            const response = await fetch(`${apiURL}get-company`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                }
+            });
 
             if (!response.ok) {
                 setSingleError('Failed to fetch records');
@@ -37,7 +45,13 @@ const CompanyTicketAssign = () => {
     const getCompanyTicketDetails = async () => {
         try {
 
-            const response = await fetch(`${apiURL}get-company-ticket`);
+            const response = await fetch(`${apiURL}get-company-ticket`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
 
             if (!response.ok && !response2.ok) {
                 setSingleError('Failed to fetch records');
@@ -45,8 +59,14 @@ const CompanyTicketAssign = () => {
             }
 
             const data = await response.json();
-            
-            const response2 = await fetch(`${apiURL}get-company`);
+
+            const response2 = await fetch(`${apiURL}get-company`,{
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
 
             const data2 = await response2.json();
 
@@ -55,7 +75,7 @@ const CompanyTicketAssign = () => {
 
                 if (matchingItem2) {
                     // Merge properties from item2 into item1
-                    return { ...item1, code: matchingItem2.code};
+                    return { ...item1, code: matchingItem2.code };
                 }
                 return item1;
             });
@@ -89,6 +109,7 @@ const CompanyTicketAssign = () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
                 },
                 body: JSON.stringify({ company: credentials.company, startNumber: credentials.startNumber, endNumber: credentials.endNumber, coin: credentials.coin }),
             });
@@ -121,6 +142,10 @@ const CompanyTicketAssign = () => {
             // Send a DELETE request to the server to delete the record by ID
             const response = await fetch(`${apiURL}edit-company-ticket/${id}`, {
                 method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
             });
 
             if (!response.ok) {
@@ -147,21 +172,25 @@ const CompanyTicketAssign = () => {
     window.handleDelete = async (id) => {
         // if (confirm('Are you sure wan`t to delete this record..?')) {
 
-            try {
-                // Send a DELETE request to the server to delete the record by ID
-                const response = await fetch(`${apiURL}delete-company-ticket/${id}`, {
-                    method: 'DELETE',
-                });
+        try {
+            // Send a DELETE request to the server to delete the record by ID
+            const response = await fetch(`${apiURL}delete-company-ticket/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
 
-                if (!response.ok) {
-                    setSingleError('Failed to delete record');
-                }
-                // If deletion is successful, fetch updated records
-                getCompanyTicketDetails();
-
-            } catch (error) {
-                console.error('Error deleting record:', error.message);
+            if (!response.ok) {
+                setSingleError('Failed to delete record');
             }
+            // If deletion is successful, fetch updated records
+            getCompanyTicketDetails();
+
+        } catch (error) {
+            console.error('Error deleting record:', error.message);
+        }
         // }
     }
 
@@ -223,7 +252,7 @@ const CompanyTicketAssign = () => {
                                             <div>
                                                 <label htmlFor="Company" className="form-label mt-3">Company</label>
                                                 <select className='form-control' name='company' id='company' onChange={handleChange}>
-                                                    <option  value={""}>select Company</option>
+                                                    <option value={""}>select Company</option>
 
                                                     {companyRecords && companyRecords.length > 0 && companyRecords.map((val, index) => (
                                                         <option value={val._id} key={index} selected={val._id === credentials.company}>{val.name}</option>

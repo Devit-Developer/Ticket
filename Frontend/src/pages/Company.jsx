@@ -72,6 +72,7 @@ const Company = () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
                 },
                 body: JSON.stringify({ name: credentials.name, code: credentials.code, address: credentials.address, email: credentials.email, mobile: credentials.mobile }),
             });
@@ -106,6 +107,10 @@ const Company = () => {
                 // Send a DELETE request to the server to delete the record by ID
                 const response = await fetch(`${apiURL}delete-company/${id}`, {
                     method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                    },                    
                 });
 
                 if (!response.ok) {
@@ -127,6 +132,10 @@ const Company = () => {
             // Send a DELETE request to the server to delete the record by ID
             const response = await fetch(`${apiURL}edit-company/${id}`, {
                 method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
             });
 
             if (!response.ok) {

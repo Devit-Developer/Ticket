@@ -1,7 +1,64 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../modules/User');
+const CompayTicket = require("../modules/CompayTicket");
+const Company = require("../modules/Company");
+
+
+
 const { JWT_SECRET } = process.env;
+
+exports.checkTicket = async (req, res) => {
+
+  const ticketNumberArray = req.body.ticketNumber.split('/');
+
+  try {
+
+    const companyDataArray = await Company.find({ code: ticketNumberArray[0] });
+
+    if (companyDataArray.length === 0) {
+
+      res.status(400).json({ error: 'No company found for code' });
+
+    }
+
+    const companyData = companyDataArray[0];
+
+    const companyTicketData = await CompayTicket.find({ company: companyData._id });
+
+    if (companyTicketData.length === 0) {
+
+      res.status(400).json({ error: 'No company Ticket found for code' });
+
+    }
+
+    let checkNumber = false;
+    companyTicketData.map((val) => {
+
+      if (parseInt(val.startNumber) <= parseInt(ticketNumberArray[1]) && parseInt(val.endNumber) >= parseInt(ticketNumberArray[1])) {
+        checkNumber = true;
+      }
+
+    });
+
+    if (checkNumber) {
+      res.status(400).json({ error: 'valid Ticket Number' });
+
+    } else {
+      
+      res.status(400).json({ error: 'Invalid Ticket Number' });
+    }
+
+    // res.json(checkNumber);
+
+  } catch (error) {
+
+    res.status(500).send(error);
+  }
+
+}
+
+
 
 exports.register = async (req, res) => {
   try {
@@ -9,7 +66,7 @@ exports.register = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = new User({ username, password: hashedPassword, roles });
     await newUser.save();
-    
+
     res.status(200).json({ message: 'User registered successfully' });
   } catch (error) {
     console.log(error);
