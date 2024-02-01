@@ -3,23 +3,30 @@ const jwt = require('jsonwebtoken');
 const User = require('../modules/User');
 const CompayTicket = require("../modules/CompayTicket");
 const Company = require("../modules/Company");
-
-
-
+const TicketRegister = require("../modules/TicketRegister");
 const { JWT_SECRET } = process.env;
 
+const checkTicketValidity = (ticketNumber) => {
+  const [companyCode, ticketNumberPart] = ticketNumber.split('/');
+
+  // Check if ticketNumber has exactly two parts and they are not empty
+  return !!(companyCode && ticketNumberPart);
+};
+
 exports.checkTicket = async (req, res) => {
-
-  const ticketNumberArray = req.body.ticketNumber.split('/');
-
   try {
+    const { ticketNumber } = req.body;
 
-    const companyDataArray = await Company.find({ code: ticketNumberArray[0] });
+    if (!checkTicketValidity(ticketNumber)) {
+      return res.status(400).json({ error: 'Invalid Ticket Number' });
+    }
+
+    const [companyCode, ticketNumberPart] = ticketNumber.split('/');
+
+    const companyDataArray = await Company.find({ code: companyCode });
 
     if (companyDataArray.length === 0) {
-
-      res.status(400).json({ error: 'No company found for code' });
-
+      return res.status(400).json({ error: 'No company found for code' });
     }
 
     const companyData = companyDataArray[0];
@@ -27,36 +34,33 @@ exports.checkTicket = async (req, res) => {
     const companyTicketData = await CompayTicket.find({ company: companyData._id });
 
     if (companyTicketData.length === 0) {
-
-      res.status(400).json({ error: 'No company Ticket found for code' });
-
+      return res.status(400).json({ error: 'No company Ticket found for code' });
     }
 
-    let checkNumber = false;
-    companyTicketData.map((val) => {
-
-      if (parseInt(val.startNumber) <= parseInt(ticketNumberArray[1]) && parseInt(val.endNumber) >= parseInt(ticketNumberArray[1])) {
-        checkNumber = true;
-      }
-
-    });
+    const checkNumber = companyTicketData.some((val) => (
+      parseInt(val.startNumber) <= parseInt(ticketNumberPart) &&
+      parseInt(val.endNumber) >= parseInt(ticketNumberPart)
+    ));
 
     if (checkNumber) {
-      res.status(400).json({ error: 'valid Ticket Number' });
+
+      const TicketRegisterCount = await TicketRegister.find({ ticketNumber: ticketNumber });
+
+      if (TicketRegisterCount.length > 0) {
+        return res.status(400).json({ error: 'Ticket Number All Ready Register' });
+      }
+      
+      return res.status(200).json({ message: 'Valid Ticket Number', companyRecord: companyDataArray });
 
     } else {
-      
-      res.status(400).json({ error: 'Invalid Ticket Number' });
+
+      return res.status(400).json({ error: 'Invalid Ticket Number' });
     }
-
-    // res.json(checkNumber);
-
   } catch (error) {
-
-    res.status(500).send(error);
+    console.error(error);
+    return res.status(500).json({ error: 'Internal Server Error' });
   }
-
-}
+};
 
 
 
